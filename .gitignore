@@ -1,0 +1,6 @@
+node_modules/
+melges-landing/node_modules/
+melges-landing/dist/
+server/.env
+server/secrets/
+*-firebase-adminsdk-*.json
