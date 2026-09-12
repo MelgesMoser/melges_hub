@@ -23,7 +23,7 @@ const NAV_ITEMS_BOTTOM = [
  * Fixed vertical icon rail shown on the left edge of the viewport (desktop only).
  * Hidden below the `lg` breakpoint in favor of the top navbar.
  */
-export default function Sidebar({ onNavigate, activeSection, loggedIn, isAdmin, open, onToggle }) {
+export default function Sidebar({ onNavigate, activeSection, loggedIn, isAdmin, open, onToggle, hasUnreadNotifications }) {
   const itemClass = (section) => `flex h-11 items-center gap-4 rounded-xl text-sm font-medium transition-colors ${open ? "px-3" : "justify-center px-0"} ${activeSection === section ? "bg-violet/15 text-violet-light" : "text-white/55 hover:bg-white/5 hover:text-white"}`;
   return (
     <aside
@@ -42,7 +42,7 @@ export default function Sidebar({ onNavigate, activeSection, loggedIn, isAdmin, 
             title={`${label}${section !== "home" && !loggedIn ? " — requer login" : ""}`}
             className={itemClass(section)}
           >
-            <Icon size={20} />
+            <span className="relative grid place-items-center"><Icon size={20} />{section === "help" && hasUnreadNotifications && <i className="absolute -right-1.5 -top-1.5 h-2.5 w-2.5 rounded-full border-2 border-ink-950 bg-violet-light shadow-[0_0_10px_rgba(184,124,250,.9)]" />}</span>
             {open && <span className="whitespace-nowrap">{label}</span>}
           </button>
         ))}

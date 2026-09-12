@@ -4,3 +4,4 @@ melges-landing/dist/
 server/.env
 server/secrets/
 *-firebase-adminsdk-*.json
+.firestore-analysis.local.md

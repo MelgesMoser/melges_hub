@@ -1,39 +1,57 @@
-type User @table {
+enum ProjectApprovalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+# A senha é gerenciada exclusivamente pelo Firebase Authentication.
+# Esta tabela armazena somente o perfil público do usuário autenticado.
+type User @table(key: "uid") {
+  uid: String! @default(expr: "auth.uid")
   username: String!
-  email: String!
-  password: String!
-  isAdmin: Boolean @default(value: false)
-  createdAt: Timestamp
-  updatedAt: Timestamp
+  email: String! @unique
+  isAdmin: Boolean! @default(value: false)
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
 type Category @table {
-  name: String!
+  name: String! @unique
   description: String
-  createdAt: Timestamp
-  updatedAt: Timestamp
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
 type Phase @table {
-  name: String!
+  name: String! @unique
   description: String
-  createdAt: Timestamp
-  updatedAt: Timestamp
+  orderIndex: Int! @default(value: 0)
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
-type Project @table {
+type Project @table @index(fields: ["userUid", "createdAt"], order: [ASC, DESC]) {
   name: String!
-  description: String
-  user: User!
-  category: Category!
-  phase: Phase!
-  createdAt: Timestamp
-  updatedAt: Timestamp
+  description: String!
+  features: String
+  approvalStatus: ProjectApprovalStatus! @default(value: PENDING)
+  progressPercent: Int! @default(value: 0)
+  user: User! @ref(fields: "userUid", references: "uid")
+  userUid: String!
+  category: Category! @ref(fields: "categoryId", references: "id")
+  categoryId: UUID!
+  phase: Phase! @ref(fields: "phaseId", references: "id")
+  phaseId: UUID!
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
-type AuditLog @table {
-  user: User!
-  project: Project!
-  createdAt: Timestamp
-  updatedAt: Timestamp
+type AuditLog @table @index(fields: ["projectId", "createdAt"], order: [ASC, DESC]) {
+  user: User! @ref(fields: "userUid", references: "uid")
+  userUid: String!
+  project: Project! @ref(fields: "projectId", references: "id")
+  projectId: UUID!
+  message: String!
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }

@@ -1,5 +1,7 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 // Esta configuração identifica o projeto Firebase no navegador. As regras do
 // Firebase continuam sendo a camada que protege os dados.
@@ -14,6 +16,8 @@ const firebaseConfig = {
 };
 
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
+export const firebaseAuth = getAuth(firebaseApp);
+export const firestore = getFirestore(firebaseApp);
 
 // Analytics só é inicializado em navegadores compatíveis; assim não quebra
 // desenvolvimento local ou navegadores que bloqueiam esse recurso.

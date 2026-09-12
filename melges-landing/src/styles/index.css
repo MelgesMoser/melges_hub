@@ -26,6 +26,111 @@
   }
 }
 
+/* Mantém o indicador de progresso da visão administrativa no canto direito. */
+@media (min-width: 1024px) {
+  section.mt-8:has([aria-label*="progresso médio"]) > .grid {
+    display: flex;
+    align-items: center;
+  }
+
+  section.mt-8:has([aria-label*="progresso médio"]) > .grid > :first-child {
+    flex: 1 1 auto;
+  }
+
+  /* Nos cards administrativos, fase e porcentagem ocupam o mesmo nível. */
+  article:has(input[type="range"]) > div > div:last-child {
+    display: grid;
+    min-width: 46rem;
+    grid-template-columns: minmax(21rem, 1fr) minmax(21rem, 1fr);
+    align-items: stretch;
+    column-gap: 1.25rem;
+    row-gap: 1rem;
+  }
+
+  article:has(input[type="range"]) > div > div:last-child > label {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 8rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(183, 116, 255, .26);
+    border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(183, 116, 255, .12), rgba(255, 255, 255, .025));
+  }
+
+  article:has(input[type="range"]) > div > div:last-child > label > .relative {
+    margin-top: .7rem;
+    width: 100%;
+  }
+
+  article:has(input[type="range"]) > div > div:last-child > div:has(> input[type="range"]) {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 8rem;
+    padding: 1rem 1.1rem;
+    border-color: rgba(183, 116, 255, .26);
+    background: linear-gradient(135deg, rgba(183, 116, 255, .12), rgba(255, 255, 255, .025));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  article:has(input[type="range"]) > div > div:last-child input[type="range"] {
+    margin-top: .85rem;
+    height: .5rem;
+    cursor: pointer;
+  }
+
+  article:has(input[type="range"]) > div > div:last-child > div:has(> input[type="range"]) button {
+    margin-top: .7rem;
+    border-radius: .6rem;
+    background: rgba(183, 116, 255, .13);
+    padding: .35rem .55rem;
+  }
+
+  article:has(input[type="range"]) > div > div:last-child > div:last-child {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+    padding-top: .15rem;
+  }
+
+  article:has(input[type="range"]) > div > div:last-child > div:last-child > button {
+    flex: 1 1 0;
+    min-height: 2.85rem;
+  }
+
+  article:has(input[type="range"]) > div > div:last-child > div:last-child > .btn-outline {
+    border-color: rgba(248, 113, 113, .42);
+    color: rgb(252, 165, 165);
+    font-weight: 700;
+  }
+
+  article:has(input[type="range"]) > div > div:last-child > div:last-child > .btn-outline:hover {
+    border-color: rgb(252, 165, 165);
+    background: rgba(248, 113, 113, .1);
+    color: rgb(254, 202, 202);
+  }
+
+  article:has(input[type="range"]) {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* O acompanhamento aprovado é apresentado como área de projetos. */
+section:has(> div > article > div > section) h2[class~="text-violet-light"] {
+  font-size: 0;
+}
+
+section:has(> div > article > div > section) h2[class~="text-violet-light"]::after {
+  content: "Projetos";
+  font-size: 1.125rem;
+}
+
 @layer components {
   .container-page {
     @apply mx-auto w-full max-w-content px-5 sm:px-6 md:px-10;

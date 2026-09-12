@@ -1,0 +1,43 @@
+# Operações de leitura do conector "example".
+# Elas precisam ficar fora do schema para que o Firebase Data Connect gere o SDK.
+
+query LoadProjectFormOptions @auth(level: PUBLIC, insecureReason: "Categorias e fases são apenas um catálogo público, sem dados pessoais.") {
+  categories(orderBy: [{ name: ASC }]) {
+    id
+    name
+    description
+  }
+  phases(orderBy: [{ orderIndex: ASC }]) {
+    id
+    name
+    description
+    orderIndex
+  }
+}
+
+query GetMyProfile @auth(level: USER) {
+  user(key: { uid_expr: "auth.uid" }) { uid username email isAdmin createdAt updatedAt }
+}
+
+query ListMyProjects @auth(level: USER) {
+  projects(where: { userUid: { eq_expr: "auth.uid" } }, orderBy: [{ updatedAt: DESC }]) {
+    id name description features approvalStatus progressPercent createdAt updatedAt
+    category { id name }
+    phase { id name description orderIndex }
+  }
+}
+
+query ListMyAuditLogs @auth(level: USER) {
+  auditLogs(where: { userUid: { eq_expr: "auth.uid" } }, orderBy: [{ createdAt: DESC }], limit: 50) {
+    id message createdAt project { id name }
+  }
+}
+
+query AdminListProjects @auth(expr: "auth.token.admin == true") {
+  projects(orderBy: [{ updatedAt: DESC }]) {
+    id name description features approvalStatus progressPercent createdAt updatedAt
+    user { uid username email }
+    category { id name }
+    phase { id name description orderIndex }
+  }
+}

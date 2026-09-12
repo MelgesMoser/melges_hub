@@ -1,0 +1,23 @@
+mutation UpsertMyProfile($username: String!) @auth(level: USER) {
+  user_upsert(data: { uid_expr: "auth.uid", username: $username, email_expr: "auth.token.email", updatedAt_expr: "request.time" })
+}
+
+mutation CreateProject($name: String!, $description: String!, $features: String, $categoryId: UUID!, $phaseId: UUID!) @auth(level: USER) {
+  project_insert(data: { name: $name, description: $description, features: $features, userUid_expr: "auth.uid", categoryId: $categoryId, phaseId: $phaseId, approvalStatus: PENDING, progressPercent: 0, updatedAt_expr: "request.time" })
+}
+
+mutation UpdateMyProject($id: UUID!, $name: String!, $description: String!, $features: String, $categoryId: UUID!) @auth(level: USER) {
+  project_update(first: { where: { id: { eq: $id }, userUid: { eq_expr: "auth.uid" } } }, data: { name: $name, description: $description, features: $features, categoryId: $categoryId, updatedAt_expr: "request.time" })
+}
+
+mutation AdminUpdateProjectPhase($id: UUID!, $phaseId: UUID!, $progressPercent: Int!) @auth(expr: "auth.token.admin == true") {
+  project_update(id: $id, data: { phaseId: $phaseId, progressPercent: $progressPercent, updatedAt_expr: "request.time" })
+}
+
+mutation AdminSetProjectApproval($id: UUID!, $approvalStatus: ProjectApprovalStatus!) @auth(expr: "auth.token.admin == true") {
+  project_update(id: $id, data: { approvalStatus: $approvalStatus, updatedAt_expr: "request.time" })
+}
+
+mutation AdminUpdateProject($id: UUID!, $name: String!, $description: String!, $features: String, $categoryId: UUID!) @auth(expr: "auth.token.admin == true") {
+  project_update(id: $id, data: { name: $name, description: $description, features: $features, categoryId: $categoryId, updatedAt_expr: "request.time" })
+}
