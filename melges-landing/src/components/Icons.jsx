@@ -9,6 +9,8 @@ const paths = {
   user: <><circle cx="12" cy="8" r="3.5" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></>,
   cloud: <><path d="M7 18h10a4 4 0 0 0 .7-7.9A5.8 5.8 0 0 0 6.5 8.5 4.8 4.8 0 0 0 7 18Z" /><path d="M12 11v6M9.5 14.5 12 17l2.5-2.5" /></>,
   settings: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.1 2.1-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-3v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-2.1-2.1.1-.1A1.7 1.7 0 0 0 7 15a1.7 1.7 0 0 0-1.5-1H5.3v-3h.2A1.7 1.7 0 0 0 7 10a1.7 1.7 0 0 0-.3-1.9l-.1-.1 2.1-2.1.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5v-.2h3v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 2.1 2.1-.1.1A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.5 1h.2v3h-.2a1.7 1.7 0 0 0-1.5 1Z" /></>,
+  wallet: <><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H19a1 1 0 0 1 1 1v3H7a3 3 0 0 0 0 6h13v3a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 16.5Z" /><path d="M20 9H7a3 3 0 0 0 0 6h13Z" /><path d="M16 12h.01" /></>,
+  calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4M17 3v4M3 10h18" /><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" /></>,
   menu: <><path d="M4 7h16M4 12h16M4 17h16" /></>,
   close: <><path d="m6 6 12 12M18 6 6 18" /></>,
   play: <path d="m8 5 11 7-11 7Z" />,
@@ -26,5 +28,7 @@ function createIcon(name) {
 }
 
 export const CircleDot = createIcon("circleDot"); export const Home = createIcon("home"); export const Gamepad2 = createIcon("gamepad"); export const Tv = createIcon("tv"); export const HelpCircle = createIcon("help"); export const Bell = createIcon("bell"); export const ChartBar = createIcon("chart"); export const User = createIcon("user"); export const CloudCog = createIcon("cloud"); export const Settings = createIcon("settings");
+export const WalletCards = createIcon("wallet");
+export const CalendarDays = createIcon("calendar");
 export const Menu = createIcon("menu"); export const X = createIcon("close"); export const Play = createIcon("play"); export const Check = createIcon("check");
 export const Facebook = createIcon("facebook"); export const Instagram = createIcon("instagram"); export const Twitter = createIcon("twitter"); export const Linkedin = createIcon("linkedin");

@@ -39,6 +39,8 @@ export default function Projects({ onRegisterProject }) {
               <img
                 src={project.image}
                 alt={project.label}
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
             </li>

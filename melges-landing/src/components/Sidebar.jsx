@@ -4,6 +4,7 @@ import {
   Tv,
   Bell,
   User,
+  WalletCards,
 } from "./Icons.jsx";
 import logo from "../assets/logo.svg";
 import logotipo from "../assets/logotipo.svg";
@@ -17,6 +18,10 @@ const NAV_ITEMS = [
 
 const NAV_ITEMS_BOTTOM = [
   { icon: User, label: "Minha conta", section: "account" },
+];
+
+const ADMIN_ITEMS = [
+  { icon: WalletCards, label: "Financeiro", section: "pricing" },
 ];
 
 /**
@@ -47,6 +52,11 @@ export default function Sidebar({ onNavigate, activeSection, loggedIn, isAdmin, 
           </button>
         ))}
       </nav>
+
+      {isAdmin && <nav className="mt-5 flex flex-col gap-2 border-t border-violet/20 pt-4">
+        {open && <p className="px-2 text-[10px] font-bold uppercase tracking-[.2em] text-violet-light/70">Administração</p>}
+        {ADMIN_ITEMS.map(({ icon: Icon, label, section }) => <button key={section} type="button" onClick={() => onNavigate(section)} title={label} className={itemClass(section)}><Icon size={20} />{open && <span className="whitespace-nowrap">{label}</span>}</button>)}
+      </nav>}
 
       <nav className="mt-auto flex flex-col gap-2 border-t border-white/10 pt-4">
         {NAV_ITEMS_BOTTOM.map(({ icon: Icon, label, section }) => (

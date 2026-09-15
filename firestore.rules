@@ -9,7 +9,8 @@ service cloud.firestore {
     // email, isAdmin and createdAt are immutable after creation.
     // projects/{id}: immutable ownerId, ownerName, ownerEmail and createdAt;
     // name (2-150), description/features (up to 5000), categoryId/category,
-    // phaseId/phase, approvalStatus, progressPercent and updatedAt. Workflow
+    // phaseId/phase, approvalStatus, progressPercent, completion timestamp and
+    // updatedAt. Workflow
     // fields are admin-only. The category and phase catalog is kept by the app;
     // no order_index is persisted.
     // notifications/{id}: immutable recipientId, projectName, message and
@@ -29,12 +30,16 @@ service cloud.firestore {
         validEmail(data.email) && data.isAdmin is bool && recent(data.createdAt) && recent(data.updatedAt);
     }
     function validProject(data) {
-      return data.keys().hasOnly(['ownerId', 'ownerName', 'ownerEmail', 'name', 'description', 'features', 'categoryId', 'category', 'phaseId', 'phase', 'approvalStatus', 'progressPercent', 'createdAt', 'updatedAt']) &&
+      return data.keys().hasOnly(['ownerId', 'ownerName', 'ownerEmail', 'name', 'description', 'features', 'categoryId', 'category', 'phaseId', 'phase', 'approvalStatus', 'progressPercent', 'quoteAmount', 'deliveryDays', 'acceptedAt', 'completedAt', 'createdAt', 'updatedAt']) &&
         data.keys().hasAll(['ownerId', 'ownerName', 'ownerEmail', 'name', 'description', 'features', 'categoryId', 'category', 'phaseId', 'phase', 'approvalStatus', 'progressPercent', 'createdAt', 'updatedAt']) &&
         validText(data.ownerId, 20, 128) && validText(data.ownerName, 2, 100) && validEmail(data.ownerEmail) &&
         validText(data.name, 2, 150) && validText(data.description, 5, 5000) && validText(data.features, 0, 5000) &&
         validText(data.categoryId, 2, 80) && validText(data.category, 2, 100) && validText(data.phaseId, 2, 80) && validText(data.phase, 2, 100) &&
         data.approvalStatus in ['pending', 'accepted', 'rejected'] && data.progressPercent is number && data.progressPercent >= 0 && data.progressPercent <= 100 &&
+        (!('quoteAmount' in data) || (data.quoteAmount is number && data.quoteAmount >= 0 && data.quoteAmount <= 10000000)) &&
+        (!('deliveryDays' in data) || (data.deliveryDays is int && data.deliveryDays >= 1 && data.deliveryDays <= 3650)) &&
+        (!('acceptedAt' in data) || data.acceptedAt is timestamp) &&
+        (!('completedAt' in data) || data.completedAt is timestamp) &&
         data.createdAt is timestamp && recent(data.updatedAt);
     }
     function ownerFieldsUnchanged() {
@@ -43,15 +48,23 @@ service cloud.firestore {
         request.resource.data.ownerEmail == resource.data.ownerEmail &&
         request.resource.data.createdAt == resource.data.createdAt;
     }
-    function clientWorkflowUnchanged() {
-      return request.resource.data.phaseId == resource.data.phaseId && request.resource.data.phase == resource.data.phase &&
-        request.resource.data.approvalStatus == resource.data.approvalStatus &&
-        request.resource.data.progressPercent == resource.data.progressPercent;
+    function clientChangesOnlyDescription() {
+      // Optional finance and completion fields must also remain untouched by
+      // owners. Using affectedKeys avoids unsafe property access when an older
+      // project does not yet have one of those optional fields.
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['name', 'description', 'features', 'categoryId', 'category', 'updatedAt']);
     }
     function validNotification(data) {
       return data.keys().hasOnly(['recipientId', 'projectName', 'message', 'createdAt']) &&
         data.keys().hasAll(['recipientId', 'projectName', 'message', 'createdAt']) &&
         validText(data.recipientId, 20, 128) && validText(data.projectName, 2, 150) && validText(data.message, 2, 1000) && recent(data.createdAt);
+    }
+    function validPricing(data) {
+      return data.keys().hasOnly(['columns', 'rows', 'updatedAt']) &&
+        data.keys().hasAll(['columns', 'rows', 'updatedAt']) &&
+        data.columns is list && data.rows is list && data.columns.size() > 0 &&
+        data.columns.size() <= 12 && data.rows.size() <= 50 && recent(data.updatedAt);
     }
 
     match /users/{uid} {
@@ -63,13 +76,18 @@ service cloud.firestore {
     match /projects/{projectId} {
       allow read: if isOwner(resource.data.ownerId) || isAdmin();
       allow create: if signedIn() && request.resource.data.ownerId == request.auth.uid && request.resource.data.ownerEmail == request.auth.token.email && validProject(request.resource.data) && recent(request.resource.data.createdAt) && request.resource.data.approvalStatus == 'pending' && request.resource.data.phase == 'Em análise' && request.resource.data.progressPercent == 0;
-      allow update: if validProject(request.resource.data) && ownerFieldsUnchanged() && ((isOwner(resource.data.ownerId) && clientWorkflowUnchanged()) || isAdmin());
+      allow update: if validProject(request.resource.data) && ownerFieldsUnchanged() && ((isOwner(resource.data.ownerId) && clientChangesOnlyDescription()) || isAdmin());
       allow delete: if false;
     }
     match /notifications/{notificationId} {
       allow read: if isOwner(resource.data.recipientId) || isAdmin();
       allow create: if isAdmin() && validNotification(request.resource.data);
       allow update, delete: if false;
+    }
+    match /pricing/{pricingId} {
+      allow read: if isAdmin() && pricingId == 'table';
+      allow create, update: if isAdmin() && pricingId == 'table' && validPricing(request.resource.data);
+      allow delete: if false;
     }
   }
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { onIdTokenChanged, signOut } from "firebase/auth";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { firebaseAuth, firestore } from "./lib/firebase.js";
-import { firebaseAccount } from "./lib/api.js";
+import { clearFirebaseAccountCache, firebaseAccount } from "./lib/api.js";
 import Sidebar from "./components/Sidebar.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Hero from "./sections/Hero.jsx";
@@ -22,8 +22,14 @@ export default function App() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
+  // Cada seção é uma página interna. Voltar ao topo evita que a nova página
+  // apareça no mesmo ponto de rolagem da página anterior.
+  useEffect(() => { window.scrollTo({ top: 0, left: 0, behavior: "auto" }); }, [activeSection]);
   useEffect(() => onIdTokenChanged(firebaseAuth, async (account) => {
-    if (!account) return setUser(null);
+    if (!account) {
+      setUser(null);
+      return;
+    }
     try { setUser(await firebaseAccount()); } catch { setUser(null); }
   }), []);
   useEffect(() => {
@@ -40,14 +46,14 @@ export default function App() {
     if (!user) return setLoginOpen(true);
     setActiveSection(section);
   };
-  const logout = async () => { await signOut(firebaseAuth); setUser(null); setActiveSection("home"); };
+  const logout = async () => { await signOut(firebaseAuth); clearFirebaseAccountCache(); setUser(null); setActiveSection("home"); };
   return (
     <div className="relative min-h-screen bg-ink-950">
       <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen((open) => !open)} activeSection={activeSection} loggedIn={Boolean(user)} isAdmin={Boolean(user?.isAdmin)} hasUnreadNotifications={hasUnreadNotifications} onNavigate={(section) => { if (section === "help" && user?.id) { localStorage.setItem(`melges-notifications-seen-${user.id}`, String(Date.now())); setHasUnreadNotifications(false); } section === "home" ? setActiveSection("home") : openPrivateArea(section); }} />
 
       <div className={`transition-[padding] duration-300 ${sidebarOpen ? "lg:pl-72" : "lg:pl-28"}`}>
         <Navbar onProjects={() => openPrivateArea("projects")} onHome={() => setActiveSection("home")} />
-        {activeSection === "home" ? <><main><Hero onRegisterProject={() => openPrivateArea("projects")} /><GamesShowcase /><Services onRegisterProject={() => openPrivateArea("projects")} /><About /><Process /><Projects onRegisterProject={() => openPrivateArea("projects")} /></main><Footer /></> : user?.isAdmin && ["admin", "overview", "projects"].includes(activeSection) ? <AdminPanel view={activeSection} /> : <><Dashboard section={activeSection} user={user} onLogout={logout} />{activeSection === "projects" && user?.isAdmin && <div className="fixed bottom-5 right-5 z-50"><button type="button" onClick={() => setActiveSection("admin")} className="btn-outline border-violet/50 bg-ink-900/95 shadow-lg">Gerenciar solicitações</button></div>}</>}
+      {activeSection === "home" ? <><main><Hero onRegisterProject={() => openPrivateArea("projects")} /><GamesShowcase /><Services onRegisterProject={() => openPrivateArea("projects")} /><About /><Process /><Projects onRegisterProject={() => openPrivateArea("projects")} /></main><Footer /></> : user?.isAdmin && ["admin", "overview", "projects", "pricing"].includes(activeSection) ? <AdminPanel view={activeSection} /> : <><Dashboard section={activeSection} user={user} onLogout={logout} />{activeSection === "projects" && user?.isAdmin && <div className="fixed bottom-5 right-5 z-50"><button type="button" onClick={() => setActiveSection("admin")} className="btn-outline border-violet/50 bg-ink-900/95 shadow-lg">Gerenciar solicitações</button></div>}</>}
       </div>
       {loginOpen && <AuthPage onBack={() => setLoginOpen(false)} onAuthenticated={(account) => { setUser(account); setLoginOpen(false); setActiveSection("projects"); }} />}
     </div>

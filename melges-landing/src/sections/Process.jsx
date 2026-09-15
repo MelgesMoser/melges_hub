@@ -1,5 +1,6 @@
-import { Play, Check } from "../components/Icons.jsx";
+import { Check } from "../components/Icons.jsx";
 import SectionTitle from "../components/SectionTitle.jsx";
+import melgesVideo from "../assets/melges.mp4";
 
 const STEPS = [
   "Design personalizado",
@@ -18,21 +19,12 @@ export default function Process() {
         />
 
         <div className="mt-14 grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          <div className="relative aspect-video overflow-hidden rounded-2xl">
-            <img
-              src="/assets/images/process-video-thumbnail.png"
-              alt="Prévia em vídeo do processo de criação de sites"
-              className="h-full w-full object-cover"
-            />
-            <button
-              type="button"
-              className="absolute inset-0 grid place-items-center bg-black/20 transition-colors hover:bg-black/30"
-              aria-label="Reproduzir vídeo"
-            >
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-white/90 text-ink-950 shadow-lg">
-                <Play size={26} className="ml-1" fill="currentColor" />
-              </span>
-            </button>
+          <div className="relative aspect-video overflow-hidden rounded-2xl border border-violet/30 bg-black shadow-[0_18px_40px_rgba(0,0,0,.3)]">
+            <video className="h-full w-full object-cover" controls preload="metadata" playsInline aria-label="Vídeo de apresentação Melges">
+              <source src={melgesVideo} type="video/mp4" />
+              Seu navegador não suporta a reprodução deste vídeo.
+            </video>
+            <span className="pointer-events-none absolute left-4 top-4 rounded-full border border-white/15 bg-ink-950/80 px-3 py-1 text-[10px] font-bold uppercase tracking-[.18em] text-violet-light">Melges em movimento</span>
           </div>
 
           <div className="flex flex-col items-start gap-5 text-left">

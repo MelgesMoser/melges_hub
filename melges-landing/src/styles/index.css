@@ -121,6 +121,25 @@
   }
 }
 
+@media (min-width: 1280px) {
+  article:has(.admin-project-controls) > div {
+    grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr) !important;
+  }
+
+  article:has(.admin-project-controls) > div > :first-child {
+    align-self: stretch;
+    border-right: 1px solid rgba(255, 255, 255, .08);
+    padding-right: 1.5rem;
+  }
+}
+
+@media (max-width: 1279px) {
+  article:has(.admin-project-controls) > div > :first-child {
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    padding-bottom: 1.25rem;
+  }
+}
+
 /* O acompanhamento aprovado é apresentado como área de projetos. */
 section:has(> div > article > div > section) h2[class~="text-violet-light"] {
   font-size: 0;
@@ -134,6 +153,12 @@ section:has(> div > article > div > section) h2[class~="text-violet-light"]::aft
 @layer components {
   .container-page {
     @apply mx-auto w-full max-w-content px-5 sm:px-6 md:px-10;
+  }
+
+  /* A lista administrativa usa uma área maior sem alterar a largura das
+     seções públicas da landing page. */
+  .container-page:has(.admin-project-card-editor) {
+    max-width: 1720px;
   }
 
   .eyebrow {
@@ -189,10 +214,93 @@ section:has(> div > article > div > section) h2[class~="text-violet-light"]::aft
   }
 }
 
+/* Barras de rolagem coerentes com a identidade escura da Melges. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #8b3ef5 #110b18;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #110b18;
+  border: 1px solid rgba(184, 124, 250, 0.16);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #b774ff, #7135ce);
+  border: 2px solid #110b18;
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #d3a5ff, #8b3ef5);
+}
+
+*::-webkit-scrollbar-corner {
+  background: #110b18;
+}
+
+/* O menu de fases é uma camada flutuante: ele não deve ser cortado pelo card
+   nem ficar escondido pelo próximo projeto da lista. */
+.admin-project-card-editor {
+  position: relative;
+}
+
+article:has(.admin-project-card-editor) {
+  overflow: visible !important;
+  position: relative;
+}
+
+article:has(.admin-project-card-editor [class*="z-[110]"]) {
+  z-index: 30;
+}
+
+.admin-project-card {
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.16);
+}
+
+.admin-project-card-summary {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1.25rem;
+  background: rgba(0, 0, 0, 0.13);
+  padding: 1.25rem;
+}
+
 @media (max-width: 639px) {
   input,
   select,
   textarea {
     font-size: 16px;
+  }
+}
+
+/* Os controles de cada projeto devem se adaptar ao card, sem largura fixa. */
+article:has(input[type="range"]) > div > div:last-child {
+  min-width: 0 !important;
+}
+
+@media (min-width: 1024px) {
+  article:has(input[type="range"]) > div > div:last-child {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  article:has(input[type="range"]) > div > .admin-project-controls {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  article:has(input[type="range"]) > div > .admin-project-controls > * {
+    min-width: 0;
   }
 }

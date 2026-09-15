@@ -30,6 +30,8 @@ export default function Services({ onRegisterProject }) {
                 <img
                   src={service.image}
                   alt={service.label}
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover"
                 />
               </div>

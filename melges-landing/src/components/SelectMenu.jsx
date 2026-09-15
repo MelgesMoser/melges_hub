@@ -4,6 +4,13 @@ export default function SelectMenu({ value, options, onChange, placeholder = "Se
   const [open, setOpen] = useState(false);
   const root = useRef(null);
   const selected = options.find((option) => String(option.id) === String(value));
-  useEffect(() => { const close = (event) => { if (!root.current?.contains(event.target)) setOpen(false); }; document.addEventListener("mousedown", close); return () => document.removeEventListener("mousedown", close); }, []);
+  // O listener só existe enquanto o menu está aberto. Assim, uma lista grande
+  // de cards não instala vários listeners globais e continua fluida.
+  useEffect(() => {
+    if (!open) return undefined;
+    const close = (event) => { if (!root.current?.contains(event.target)) setOpen(false); };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [open]);
   return <div ref={root} className="relative mt-2"><button type="button" disabled={disabled} onClick={() => setOpen((current) => !current)} className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-ink-800 px-4 py-3 text-left text-sm text-white shadow-inner outline-none transition hover:border-violet/60 focus:border-violet disabled:cursor-not-allowed disabled:opacity-50"><span className={selected ? "text-white" : "text-white/40"}>{selected?.name || placeholder}</span><span className={`ml-4 grid h-6 w-6 place-items-center rounded-lg bg-violet/10 text-violet-light transition-transform ${open ? "rotate-180" : ""}`}><svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m7 10 5 5 5-5" /></svg></span></button>{open && <div className="absolute z-[110] mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border border-violet/30 bg-ink-900 p-1.5 shadow-[0_20px_45px_rgba(0,0,0,.55)]">{options.map((option) => <button type="button" key={option.id} onClick={() => { onChange(option.id); setOpen(false); }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm transition ${String(option.id) === String(value) ? "bg-violet text-white" : "text-white/70 hover:bg-white/8 hover:text-white"}`}><span>{option.name}</span>{String(option.id) === String(value) && <span>✓</span>}</button>)}</div>}</div>;
 }
